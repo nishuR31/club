@@ -1,0 +1,38 @@
+{
+  "name": "club",
+  "version": "1.0.0",
+  "description": "a club website for college clubs like tech,art for main purpose of joining talents",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "sagar": "npx nodemon src/config/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nishuR31/club.git"
+  },
+  "keywords": [
+    "club"
+  ],
+  "author": "nishu, nishan, akash ,sagar",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/nishuR31/club/issues"
+  },
+  "homepage": "https://github.com/nishuR31/club#readme",
+  "dependencies": {
+    "cloudinary": "^2.7.0",
+    "cookie-parser": "^1.4.7",
+    "cors": "^2.8.5",
+    "dotenv": "^17.0.1",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.16.1",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.10"
+  }
+}
