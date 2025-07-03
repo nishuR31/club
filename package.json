@@ -6,7 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "sagar": "npx nodemon src/config/app.js"
+    "sagar": "npx nodemon src/index.js"
   },
   "repository": {
     "type": "git",
@@ -22,9 +22,11 @@
   },
   "homepage": "https://github.com/nishuR31/club#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "cloudinary": "^2.7.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
+    "crypto": "^1.0.1",
     "dotenv": "^17.0.1",
     "express": "^5.1.0",
     "helmet": "^8.1.0",

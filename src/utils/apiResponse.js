@@ -2,12 +2,12 @@ import codes from "../constants/codes.js";
 
 class ApiResponse {
   constructor(
-    message = "API fetching successful",
+    message = "API fetched successfully",
     code = codes.ok,
     payload = {},
     success = true
   ) {
-    super(message);
+    this.message = message;
     this.code = code;
     this.payload = payload;
     this.success = success;

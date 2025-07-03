@@ -1,18 +1,7 @@
-import jwt from "jsonwebtoken";
-
-function accessToken(payload, secret, options) {
-  return jwt.sign(payload, secret["access"], options["access"]);
-}
-
-function refreshToken(payload, secret, options) {
-  return jwt.sign(payload, secret["refresh"], options["refresh"]);
-}
-
-function tokenGeneration(payload, secret, options) {
+export default function tokenOptions(type) {
   return {
-    accessToken: accessToken(payload, secret, options),
-    refreshToken: refreshToken(payload, secret, options),
+    expiresIn: type.toLowerCase().trim() === "access" ? "1d" : "15d", // ⏰ Token expiration (e.g. '60s', '1h', '7d')
+    issuer: "club-app", // 📛 Who issued the token
+    audience: "club-clients", // 🎯 Who the token is intended for
   };
 }
-
-export { accessToken, refreshToken, tokenGeneration };

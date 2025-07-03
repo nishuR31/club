@@ -13,7 +13,7 @@ export default class ApiErrorResponse extends Error {
     this.success = success;
     this.payload = payload;
     this.err = err;
-    this.stack = error.stack || Error.captureStackTrace(this, this.contructor);
+    this.stack = err.stack || Error.captureStackTrace(this, this.contructor);
   }
 
   res(dev = true) {
