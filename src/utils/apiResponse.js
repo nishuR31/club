@@ -1,26 +1,21 @@
-import codes from "../constants/codes.js";
+import codes from "../constants/codes";
 
-class ApiResponse {
+export default class ApiResponse {
   constructor(
-    message = "API fetched successfully",
-    code = codes.ok,
+    message = "Something broke while fetching",
+    code = codes.badRequest,
     payload = {},
-    success = true
+    err = {}
   ) {
-    this.message = message;
     this.code = code;
     this.payload = payload;
-    this.success = success;
   }
-
   res() {
     return {
       message: this.message,
       code: this.code,
-      success: this.success,
       payload: this.payload,
+      success: true,
     };
   }
 }
-
-export default ApiResponse;

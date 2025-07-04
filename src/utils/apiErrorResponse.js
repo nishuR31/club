@@ -1,29 +1,24 @@
-import codes from "../constants/codes.js";
+import codes from "../constants/codes";
 
 export default class ApiErrorResponse extends Error {
   constructor(
-    message = "something broke",
+    message = "Something broke while fetching",
     code = codes.badRequest,
     payload = {},
-    err = {},
-    success = !true
+    err = {}
   ) {
     super(err.message || message);
     this.code = code;
-    this.success = success;
     this.payload = payload;
-    this.err = err;
-    this.stack = err.stack || Error.captureStackTrace(this, this.contructor);
+    this.stack = err.stack || Error.captureStackTrace(this, this.constructor);
   }
-
   res(dev = true) {
     return {
       message: this.message,
       code: this.code,
       payload: this.payload,
-      err: this.err,
-      sucess: this.success,
       stack: dev ? this.stack : null,
+      success: false,
     };
   }
 }

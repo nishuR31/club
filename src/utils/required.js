@@ -1,3 +1,3 @@
 export default function required(field) {
-  return `Kindly provide ${field}`;
+  return `Please provide ${field}`;
 }

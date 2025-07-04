@@ -1,7 +1,8 @@
 export default function tokenOptions(type) {
   return {
-    expiresIn: type.toLowerCase().trim() === "access" ? "1d" : "15d", // ⏰ Token expiration (e.g. '60s', '1h', '7d')
-    issuer: "club-app", // 📛 Who issued the token
-    audience: "club-clients", // 🎯 Who the token is intended for
+    expiresIn: type.toLowerCase().trim() === "access" ? "1d" : "15d", // token valid for 1 day
+    issuer: "nishu", // who issued the token
+    subject: "token option with expiry", // subject of the token
+    audience: "nishu's backend user", // intended audience
   };
 }

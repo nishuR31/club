@@ -1,84 +1,94 @@
 import mongoose from "mongoose";
-import bcrypt from "bcrypt";
 import required from "../utils/required.js";
+import bcrypt from "bcrypt";
+
+const roles = ["admin", "client"];
+
 const userSchema = new mongoose.Schema(
   {
     userName: {
       type: String,
-      required: [true, required("username")],
-      unique: true,
-      lowercase: true,
       trim: true,
-      index: true,
+      lowercase: true,
+      unique: true,
+      required: [true, required("username")],
     },
+    fullName: { type: String, trim: true },
+    avatar: { type: String },
+    cover: { type: String },
     email: {
       type: String,
-      required: [true, required("email")],
+      trim: true,
+      lowercase: true,
       unique: true,
-      lowecase: true,
-      trim: true,
-    },
-    fullName: {
-      type: String,
-      trim: true,
-      index: true,
-      default: "",
-    },
-    avatar: {
-      type: String, // cloudinary url
-      required: true,
-    },
-    coverImage: {
-      type: String, // cloudinary url
+      required: [true, required("email")],
     },
     password: {
       type: String,
+      trim: true,
       required: [true, required("password")],
+    },
+    otp: {
+      type: Number,
+      default: 0,
     },
     refreshToken: {
       type: String,
       default: null,
     },
-
-    otp: {
-      type: String,
-      default: null,
-    },
-
     token: {
       type: String,
       default: null,
     },
+    role: {
+      type: String,
+      enum: {
+        values: roles,
+        message: "Invalid role",
+      },
+      default: null,
+    },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) return next();
-
+  if (!this.isModified("password")) {
+    return next();
+  }
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
 userSchema.pre("findOneAndUpdate", async function (next) {
-  if (!this.isModified("password")) return next();
-
+  if (!this.isModified("password")) {
+    return next();
+  }
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
 userSchema.pre("findByIdAndUpdate", async function (next) {
-  if (!this.isModified("password")) return next();
-
+  if (!this.isModified("password")) {
+    return next();
+  }
   this.password = await bcrypt.hash(this.password, 10);
   next();
 });
 
-userSchema.methods.passwordMatch = async function (password) {
+userSchema.methods.comparePassword = async function (password) {
   return await bcrypt.compare(password, this.password);
 };
 
-const User = mongoose.model("User", userSchema);
+userSchema.pre("findOneAndUpdate", async function (next) {
+  const update = this.getUpdate();
+
+  if (update.password) {
+    const hashed = await bcrypt.hash(update.password, 10);
+    this.setUpdate({ ...update, password: hashed });
+  }
+  next();
+});
+
+let User = mongoose.model("User", userSchema);
 export default User;
