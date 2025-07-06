@@ -1,4 +1,4 @@
-# SynergyHub - Backend
+# Club - Backend
 
 [![Node.js](https://img.shields.io/badge/Node.js-green?logo=node.js&style=flat&logoColor=white)](https://nodejs.org/)
 [![Express](https://img.shields.io/badge/Express.js%20Backend-black?logo=express&style=flat&logoColor=white)](https://expressjs.com/)

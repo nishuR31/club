@@ -1,99 +1,77 @@
+import asyncHandler from "../utils/asyncHandler.js";
+import User from "../models/user.model.js";
+import { verifyAccess, verifyRefresh } from "../utils/tokenization.js"; // use correct methods
 import codes from "../contants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
-import asyncHandler from "../utils/asyncHandler.js";
-import { verifyAccess, verifyRefresh } from "../utils/tokenization.js";
-import User from "../models/user.model.js";
 
-const authMiddleware = (required = true) =>
-  asyncHandler(async (req, res, next) => {
-    let { userRole } = req.params;
+const auth = asyncHandler(async (req, res, next) => {
+  let accessToken =
+    req.headers?.authorization?.split(" ")[1] || req.cookies?.userAccessToken;
+  let refreshToken = req.cookies?.userRefreshToken;
 
-    let accessToken = req.headers.authorization
-      ? req.headers.authorization.split(" ")[1]
-      : req.cookies.userAccessToken;
+  if (!accessToken || !refreshToken) {
+    return res
+      .status(codes.unauthorized)
+      .json(
+        new ApiErrorResponse(
+          "Missing authentication tokens",
+          codes.unauthorized
+        ).res()
+      );
+  }
 
-    let refreshToken = req.cookies.userRefreshToken;
+  let decodedAccess, decodedRefresh;
 
-    // Handle missing tokens
-    if (!accessToken || !refreshToken) {
-      if (required) {
-        return res
-          .status(codes.unauthorized)
-          .json(
-            new ApiErrorResponse("Missing tokens", codes.unauthorized).res()
-          );
-      } else {
-        req.user = null;
-        return next();
-      }
-    }
+  try {
+    decodedAccess = verifyAccess(accessToken);
+  } catch (err) {
+    return res
+      .status(codes.unauthorized)
+      .json(
+        new ApiErrorResponse(
+          "Access token invalid or expired",
+          codes.unauthorized,
+          {},
+          err
+        ).res()
+      );
+  }
 
-    let decodedAccess, decodedRefresh;
+  try {
+    decodedRefresh = verifyRefresh(refreshToken);
+  } catch (err) {
+    return res
+      .status(codes.unauthorized)
+      .json(
+        new ApiErrorResponse(
+          "Refresh token invalid",
+          codes.unauthorized,
+          {},
+          err
+        ).res()
+      );
+  }
 
-    // Verify tokens
-    try {
-      decodedAccess = verifyAccess(accessToken);
-      decodedRefresh = verifyRefresh(refreshToken);
-    } catch (err) {
-      if (required) {
-        return res
-          .status(codes.internalServerError)
-          .json(
-            new ApiErrorResponse(
-              "Token verification failed",
-              codes.internalServerError
-            ).res()
-          );
-      } else {
-        req.user = null;
-        return next();
-      }
-    }
+  if (decodedAccess._id !== decodedRefresh._id) {
+    return res
+      .status(codes.unauthorized)
+      .json(
+        new ApiErrorResponse(
+          "Token identity mismatch",
+          codes.unauthorized
+        ).res()
+      );
+  }
 
-    // Check token payloads match
-    if (
-      !decodedAccess ||
-      !decodedRefresh ||
-      decodedAccess._id !== decodedRefresh._id
-    ) {
-      return res
-        .status(codes.badRequest)
-        .json(new ApiErrorResponse("Tokens mismatch", codes.badRequest).res());
-    }
+  const client = await User.findById(decodedRefresh._id);
+  if (!client) {
+    return res
+      .status(codes.notFound)
+      .json(new ApiErrorResponse("User not found", codes.notFound).res());
+  }
 
-    const { _id, email, userName, role } = decodedRefresh;
+  req.user = decodedRefresh;
+  return next();
+});
 
-    // Check role match if required
-    if (required && userRole && userRole !== role) {
-      return res
-        .status(codes.unauthorized)
-        .json(new ApiErrorResponse("Roles mismatch", codes.unauthorized).res());
-    }
-
-    // Validate user
-    const user = await User.findOne({
-      $or: [{ email }, { userName }, { _id }],
-    });
-
-    if (!user || user.refreshToken !== refreshToken) {
-      if (required) {
-        return res
-          .status(codes.conflict)
-          .json(
-            new ApiErrorResponse(
-              "Invalid user or refresh token",
-              codes.conflict
-            ).res()
-          );
-      } else {
-        req.user = null;
-        return next();
-      }
-    }
-
-    // ✅ All checks passed
-    req.user = decodedRefresh;
-    next();
-  });
-
-export default authMiddleware;
+export default auth;

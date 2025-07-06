@@ -1,28 +1,24 @@
 import jwt from "jsonwebtoken";
-
-function verifyAccess(payload) {
-  return jwt.verify(payload, process.env.SECRET_ACC);
+import tokenOptions from "../contants/tokenOptions.js"
+function accessToken(payload, options = {}) {
+  return jwt.sign(payload,process.env.SECRET_ACC, tokenOptions("access"));
 }
-function verifyRefresh(payload) {
-  return jwt.verify(payload, process.env.SECRET_REF);
-}
-function accessToken(payload) {
-  return jwt.sign(payload, process.env.SECRET_ACC, tokenOptions("access"));
-}
-function refreshToken(payload) {
+function refreshToken(payload, options = {}) {
   return jwt.sign(payload, process.env.SECRET_REF, tokenOptions("refresh"));
 }
+
 function tokenGeneration(payload) {
   return {
-    accessToken: accessToken(payload),
     refreshToken: refreshToken(payload),
+    accessToken: accessToken(payload),
   };
 }
 
-export {
-  verifyAccess,
-  verifyRefresh,
-  tokenGeneration,
-  accessToken,
-  refreshToken,
-};
+function verifyAccess(token){
+  return jwt.verify(token,process.env.SECRET_ACC)
+}
+function verifyRefresh(token){
+  return jwt.verify(token,process.env.SECRET_REF)
+}
+
+export { accessToken, refreshToken, tokenGeneration,verifyAccess,verifyRefresh };

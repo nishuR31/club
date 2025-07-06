@@ -5,6 +5,7 @@ import expressLimit from "express-rate-limit";
 import logger from "../utils/logger.js";
 import codes from "../contants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
+import cookieParser from "cookie-parser";
 
 // let limit = expressLimit({
 //   windowMs: 60 * 1000,
@@ -18,6 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(logger);
 app.use(morgan("dev"));
 app.use(cors());
+app.use(cookieParser());
 // app.use(limit);
 
 let baseRoute = "/api/v1";

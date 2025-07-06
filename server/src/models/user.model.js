@@ -1,5 +1,8 @@
+// usermodel
+
 import mongoose from "mongoose";
 import required from "../utils/required.js";
+import validator from "validator";
 import bcrypt from "bcrypt";
 
 const roles = ["admin", "client"];
@@ -13,9 +16,12 @@ const userSchema = new mongoose.Schema(
       unique: true,
       required: [true, required("username")],
     },
-    fullName: { type: String, trim: true },
-    avatar: { type: String },
-    cover: { type: String },
+    fullName: {
+      type: String,
+      required: true,
+      lowercase: true, // ensures all stored usernames are lowercase
+      unique: true,
+    },
     email: {
       type: String,
       trim: true,
@@ -29,9 +35,10 @@ const userSchema = new mongoose.Schema(
       required: [true, required("password")],
     },
     otp: {
-      type: Number,
-      default: 0,
+      type: String,
     },
+    otpExp: { type: Date },
+    otpValid: { type: Boolean },
     refreshToken: {
       type: String,
       default: null,
@@ -53,14 +60,6 @@ const userSchema = new mongoose.Schema(
 );
 
 userSchema.pre("save", async function (next) {
-  if (!this.isModified("password")) {
-    return next();
-  }
-  this.password = await bcrypt.hash(this.password, 10);
-  next();
-});
-
-userSchema.pre("findOneAndUpdate", async function (next) {
   if (!this.isModified("password")) {
     return next();
   }

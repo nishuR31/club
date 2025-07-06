@@ -1,21 +1,24 @@
-import codes from "../constants/codes";
+
+// apiResponse
+
+import codes from "../contants/codes.js";
 
 export default class ApiResponse {
   constructor(
-    message = "Something broke while fetching",
-    code = codes.badRequest,
-    payload = {},
-    err = {}
+    message = "Api fetched successfully",
+    code = codes.ok,
+    payload = {}
   ) {
+    this.message=message;
     this.code = code;
     this.payload = payload;
   }
+
   res() {
     return {
       message: this.message,
       code: this.code,
       payload: this.payload,
-      success: true,
     };
   }
 }

@@ -1,8 +1,11 @@
-import codes from "../constants/codes";
+
+// ApiErrorResponse
+
+import codes from "../contants/codes.js";
 
 export default class ApiErrorResponse extends Error {
   constructor(
-    message = "Something broke while fetching",
+    message = "Api fetched successfully",
     code = codes.badRequest,
     payload = {},
     err = {}
@@ -10,15 +13,15 @@ export default class ApiErrorResponse extends Error {
     super(err.message || message);
     this.code = code;
     this.payload = payload;
-    this.stack = err.stack || Error.captureStackTrace(this, this.constructor);
+    this.stack=err.stack || Error.captureStackTrace(this, this.constructor);
   }
-  res(dev = true) {
+
+  res() {
     return {
       message: this.message,
       code: this.code,
       payload: this.payload,
-      stack: dev ? this.stack : null,
-      success: false,
+      stack: this.stack,
     };
   }
 }
