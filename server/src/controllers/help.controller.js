@@ -1,6 +1,6 @@
 // help: /help
 
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
 

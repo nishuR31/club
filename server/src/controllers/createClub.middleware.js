@@ -2,7 +2,7 @@ import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/apiResponse.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import isEmpty from "../utils/isEmpty.js";
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 import Club from "../models/club.model.js";
 
 const createClub = asyncHandler(async (req, res) => {
@@ -13,21 +13,36 @@ const createClub = asyncHandler(async (req, res) => {
   if (!user || !user._id) {
     return res
       .status(codes.unauthorized)
-      .json(new ApiErrorResponse("Unauthorized: login required", codes.unauthorized).res());
+      .json(
+        new ApiErrorResponse(
+          "Unauthorized: login required",
+          codes.unauthorized
+        ).res()
+      );
   }
 
   // 2. Role check (adjust roles as needed)
   if (!["admin", "client"].includes(user.role)) {
     return res
       .status(codes.forbidden)
-      .json(new ApiErrorResponse("You are not allowed to create a club", codes.forbidden).res());
+      .json(
+        new ApiErrorResponse(
+          "You are not allowed to create a club",
+          codes.forbidden
+        ).res()
+      );
   }
 
   // 3. Validation
-  if (isEmpty([name, description, category ])) {
+  if (isEmpty([name, description, category])) {
     return res
       .status(codes.badRequest)
-      .json(new ApiErrorResponse("Club credentials are required", codes.badRequest).res());
+      .json(
+        new ApiErrorResponse(
+          "Club credentials are required",
+          codes.badRequest
+        ).res()
+      );
   }
 
   // 4. Check if club already exists
@@ -35,7 +50,12 @@ const createClub = asyncHandler(async (req, res) => {
   if (existing) {
     return res
       .status(codes.conflict)
-      .json(new ApiErrorResponse("Club with this name already exists", codes.conflict).res());
+      .json(
+        new ApiErrorResponse(
+          "Club with this name already exists",
+          codes.conflict
+        ).res()
+      );
   }
 
   // 5. Create the club
@@ -52,7 +72,9 @@ const createClub = asyncHandler(async (req, res) => {
 
   return res
     .status(codes.created)
-    .json(new ApiResponse("Club created successfully", codes.created, club).res());
+    .json(
+      new ApiResponse("Club created successfully", codes.created, club).res()
+    );
 });
 
 export default createClub;

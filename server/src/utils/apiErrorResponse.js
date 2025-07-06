@@ -1,7 +1,7 @@
 
 // ApiErrorResponse
 
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 
 export default class ApiErrorResponse extends Error {
   constructor(

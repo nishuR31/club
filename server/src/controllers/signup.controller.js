@@ -1,6 +1,6 @@
 // signup:auth/user/signup
 
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -10,7 +10,7 @@ import User from "../models/user.model.js";
 let signup = asyncHandler(async (req, res) => {
   let body = req.body;
   let { user } = req.params;
-  let { userName, email, role, password } = body;
+  let { userName, email, role, fullName, password } = body;
   if (!(role === user)) {
     return res
       .status(codes.unauthorized)
@@ -21,7 +21,7 @@ let signup = asyncHandler(async (req, res) => {
         ).res()
       );
   }
-  if (isEmptyArr([userName, email, role]) || !password) {
+  if (isEmptyArr([userName, fullName, email, role]) || !password) {
     return res
       .status(codes.badRequest)
       .json(

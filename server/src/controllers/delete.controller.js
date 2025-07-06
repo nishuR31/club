@@ -1,6 +1,6 @@
 // delete: profile/username/delete
 
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -52,31 +52,27 @@ const deletion = asyncHandler(async (req, res) => {
   for (let cookieName in req.cookies) {
     res.clearCookie(cookieName, {
       httpOnly: true,
-        sameSite: "Lax",  // or Lax/Strict
-        secure: "None",
-
+      sameSite: "Lax", // or Lax/Strict
+      secure: "None",
     });
   }
 
-//   res.clearCookie("userAccessToken", {
-//   httpOnly: true,
-//   sameSite: "Lax",
-//   secure: false, // match original; NOT "None" — it's a boolean
-// });
+  //   res.clearCookie("userAccessToken", {
+  //   httpOnly: true,
+  //   sameSite: "Lax",
+  //   secure: false, // match original; NOT "None" — it's a boolean
+  // });
 
-// res.clearCookie("userRefreshToken", {
-//   httpOnly: true,
-//   sameSite: "Lax",
-//   secure: false,
-// });
-
+  // res.clearCookie("userRefreshToken", {
+  //   httpOnly: true,
+  //   sameSite: "Lax",
+  //   secure: false,
+  // });
 
   // Success response
   return res
     .status(codes.accepted)
-    .json(
-      new ApiResponse("User deletion completed", codes.accepted).res()
-    );
+    .json(new ApiResponse("User deletion completed", codes.accepted).res());
 });
 
 export default deletion;

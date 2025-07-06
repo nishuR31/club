@@ -1,7 +1,6 @@
-
 // verifyForgotToken:auth/verify-token
 
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -31,7 +30,10 @@ const verifyForgotToken = asyncHandler(async (req, res) => {
     return res
       .status(codes.unauthorized)
       .json(
-        new ApiErrorResponse("OTP expired. Please request a new one.", codes.unauthorized).res()
+        new ApiErrorResponse(
+          "OTP expired. Please request a new one.",
+          codes.unauthorized
+        ).res()
       );
   }
 
@@ -46,7 +48,7 @@ const verifyForgotToken = asyncHandler(async (req, res) => {
   // Clear OTP after success
   user.otp = null;
   user.otpExp = null;
-  user.otpValid=true;
+  user.otpValid = true;
   await user.save();
 
   return res

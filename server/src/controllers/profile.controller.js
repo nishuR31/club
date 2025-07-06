@@ -1,6 +1,6 @@
 // profile:/profile/username
 
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -9,7 +9,7 @@ import User from "../models/user.model.js";
 const profile = asyncHandler(async (req, res) => {
   const { username } = req.params;
   const { userName, email, _id, role } = req.user || {};
-  const client = await User.findOne({ userName: username });
+  const client = await User.findOne({ $or:[{userName: username},{email},{_id}] });
 
   if (!client) {
     return res

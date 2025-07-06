@@ -28,6 +28,14 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
       required: [true, required("email")],
+      role: {
+        type: String,
+        enum: {
+          values: roles,
+          message: "Invalid role",
+        },
+        default: null,
+      },
     },
     password: {
       type: String,
@@ -45,14 +53,6 @@ const userSchema = new mongoose.Schema(
     },
     token: {
       type: String,
-      default: null,
-    },
-    role: {
-      type: String,
-      enum: {
-        values: roles,
-        message: "Invalid role",
-      },
       default: null,
     },
   },

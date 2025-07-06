@@ -1,10 +1,9 @@
-import app from "./config/app.js";
-import mongoDB from "./config/mongoDB.js";
+import app from "./src/config/app.js";
+import mongoDB from "./src/config/connectDB.js";
 // import dotenv from "dotenv";
 // // dotenv.config({ path: "./.env" });
 // dotenv.config();
-
-import "./utils/config.env.js";
+import "./src/utils/config.env.js";
 
 let uri = process.env.MONGO_URI;
 let port = process.env.PORT || 4000;

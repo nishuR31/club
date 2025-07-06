@@ -37,6 +37,7 @@ const clubSchema = new mongoose.Schema(
         ref: "User",
       },
     ],
+
     logo: {
       type: String, // URL or file path
     },

@@ -1,7 +1,7 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import User from "../models/user.model.js";
 import { verifyAccess, verifyRefresh } from "../utils/tokenization.js"; // use correct methods
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 
 const auth = asyncHandler(async (req, res, next) => {

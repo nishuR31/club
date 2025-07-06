@@ -1,7 +1,6 @@
-
 // apiResponse
 
-import codes from "../contants/codes.js";
+import codes from "../constants/codes.js";
 
 export default class ApiResponse {
   constructor(
@@ -9,7 +8,7 @@ export default class ApiResponse {
     code = codes.ok,
     payload = {}
   ) {
-    this.message=message;
+    this.message = message;
     this.code = code;
     this.payload = payload;
   }
