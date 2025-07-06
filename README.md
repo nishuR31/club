@@ -73,17 +73,15 @@ This project is licensed under the [LICENSE](LICENSE).
 
 ## Contributed by:
 
-<br>
-
-[![Akash](https://img.shields.io/badge/Akash%20Munda-blueviolet?logo=github&logoColor=white&style=flat)](https://github.com/Akash-Munda)
+<!--[![Akash](https://img.shields.io/badge/Akash%20Munda-blueviolet?logo=github&logoColor=white&style=flat)](https://github.com/Akash-Munda)
 [![Sagar](https://img.shields.io/badge/Sagar-blueviolet?logo=github&logoColor=white&style=flat)](https://github.com/Sagar22012)
 [![Aman](https://img.shields.io/badge/Aman-blueviolet?logo=github&logoColor=white&style=flat)](https://github.com/Aman-kumar2006)
 [![Aditya](https://img.shields.io/badge/Aditya-blueviolet?logo=github&logoColor=white&style=flat)](https://github.com/technical-aditya-rathore)
-[![Himansu](https://img.shields.io/badge/Himansu-blueviolet?logo=github&logoColor=white&style=flat)](https://github.com/himanshu2788)
+[![Himansu](https://img.shields.io/badge/Himansu-blueviolet?logo=github&logoColor=white&style=flat)](https://github.com/himanshu2788)-->
+[![Contributors](https://contrib.rocks/image?repo=nishuR31/synergyHub)](https://github.com/nishuR31/synergyHub/graphs/contributors)
 
 ## 👥 Collaborators
 
-<h3>👥 Collaborators</h3>
 
 <table>
   <tr>
