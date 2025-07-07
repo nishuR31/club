@@ -5,7 +5,7 @@ import asyncHandler from "../utils/asyncHandler";
 
 const homePage = asyncHandler(async (req, res) => {
   //home
-  const data = await Home.findOne({ home: home });
+  const data = await Home.findOne({ home: "home" });
   const addFields = await Home.aggregate([
     { $match: { home: "home" } },
     {

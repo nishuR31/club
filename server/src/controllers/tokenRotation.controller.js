@@ -9,13 +9,15 @@ import { tokenGeneration } from "../utils/tokenization.js";
 import cookieOptions from "../constants/cookieOptions.js";
 let tokenRotation = asyncHandler(async (req, res) => {
   let { user } = req.params;
-  let { _id, userName, email } = req.user;
+  let { _id, userName, email,role } = req.user;
 
-  if (isEmptyArr([_id, userName, email])) {
+  if (!req.user) {
     return res
       .status(codes.badRequest)
       .json(
-        new ApiErrorResponse("Some fields are empty", codes.badRequest).res()
+        new ApiErrorResponse(
+          "Unauthorized: login required",
+          codes.badRequest).res()
       );
   }
   let client = await User.findOne({ $or: [{ userName }, { email }, { _id }] });
@@ -35,8 +37,8 @@ let tokenRotation = asyncHandler(async (req, res) => {
 
   client.refreshToken = refreshToken;
   await client.save();
-  res.cookie(`userAccessToken`, accessToken, cookieOptions("access"));
-  res.cookie(`userRefreshToken`, refreshToken, cookieOptions("refresh"));
+    res.cookie(`${user}AccessToken`, accessToken, cookieOptions("access"));
+    res.cookie(`${user}RefreshToken`, refreshToken, cookieOptions("refresh"));
   return res.status(codes.ok).json(
     new ApiResponse("Token rotation successfull", codes.ok, {
       accessToken: accessToken,

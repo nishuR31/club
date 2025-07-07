@@ -5,9 +5,10 @@ import codes from "../constants/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 
 const auth = asyncHandler(async (req, res, next) => {
+  let {user}=req.params;
   let accessToken =
-    req.headers?.authorization?.split(" ")[1] || req.cookies?.userAccessToken;
-  let refreshToken = req.cookies?.userRefreshToken;
+    req.headers?.authorization?.split(" ")[1] || req.cookies?.[`${user}AccessToken`];
+  let refreshToken = req.cookies?.[`${user}RefreshToken`];
 
   if (!accessToken || !refreshToken) {
     return res

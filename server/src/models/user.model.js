@@ -28,13 +28,14 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       unique: true,
       required: [true, required("email")],
-      role: {
-        type: String,
+      roles: {
+        type: [String],
         enum: {
           values: roles,
           message: "Invalid role",
         },
-        default: null,
+        required:[true,required("roles")],
+        default: ["client"],
       },
     },
     password: {

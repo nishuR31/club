@@ -10,18 +10,18 @@ import User from "../models/user.model.js";
 let signup = asyncHandler(async (req, res) => {
   let body = req.body;
   let { user } = req.params;
-  let { userName, email, role, fullName, password } = body;
-  if (!(role === user)) {
+  let { userName, email, roles, fullName, password } = body;
+  if (!user.some(role => roles.includes(roles))) {
     return res
       .status(codes.unauthorized)
       .json(
         new ApiErrorResponse(
-          "Mismatch role access detected",
+          "Unauthorized accepted detected",
           codes.unauthorized
         ).res()
       );
   }
-  if (isEmptyArr([userName, fullName, email, role]) || !password) {
+  if (isEmptyArr([userName, fullName, email, roles]) || !password) {
     return res
       .status(codes.badRequest)
       .json(

@@ -32,5 +32,5 @@ const clientSchema = new mongoose.Schema({
   coverImg: { type: String },
 });
 
-let Client = mongoose.model(Client, clientSchema);
+let Client = mongoose.model("Client", clientSchema);
 export default Client;

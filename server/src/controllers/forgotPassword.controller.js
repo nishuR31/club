@@ -20,14 +20,16 @@ let forgotPassword = asyncHandler(async (req, res) => {
       .json(new ApiErrorResponse("Email is empty", codes.badRequest).res());
   }
 
-  const client = await User.findOne({ email: email });
+  const client = await User.findOne({email: email });
 
   if (!client) {
-    return res.status(codes.notFound).json(
-      new ApiErrorResponse("User with this email not found", codes.notFound, {
-        email,
-      }).res()
-    );
+    return res
+      .status(codes.notFound)
+      .json( 
+        new ApiErrorResponse("User with this email not found", codes.notFound, {
+          email,
+        }).res()
+      );
   }
 
   const otp = OTPGen();
@@ -38,7 +40,7 @@ let forgotPassword = asyncHandler(async (req, res) => {
 
   await client.save();
 
-  await sendMail(email, client.userName, otp); // Send plain OTP or styled HTML
+  await sendMail(email,client.userName, otp); // Send plain OTP or styled HTML  
   // to,username,otp
 
   return res
@@ -46,8 +48,7 @@ let forgotPassword = asyncHandler(async (req, res) => {
     .json(
       new ApiResponse(
         "OTP sent to email, redirect to verification step",
-        codes.ok,
-        { "Email sent to": email }
+        codes.ok,{"Email sent to":email}
       ).res()
     );
 });

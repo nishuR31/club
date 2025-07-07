@@ -1,52 +1,42 @@
+
 // logout:/profile/username/logout
 
 import codes from "../constants/codes.js";
 import ApiResponse from "../utils/apiResponse.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
-import User from "../models/user.model.js";
+import User from "../models/user.model.js"
 
 let logout = asyncHandler(async (req, res) => {
-  let { username } = req.params;
-  let { userName, _id, email, role } = req.user;
+let {userName,_id,email,roles}=req.user;
 
-  if (username !== userName) {
-    return res
-      .status(codes.conflict)
-      .json(
-        new ApiErrorResponse(
-          "Cant logout from other's account",
-          codes.conflict,
-          { username: username }
-        ).res()
-      );
-  }
+if(!req.user){return res.status(codes.conflict).json(new ApiErrorResponse("Cant logout if not logged in",codes.conflict,{username:username}).res())}
 
-  let client = await User.findOne({ $or: [{ userName }, { _id }, { email }] });
-  client.refreshToken = null;
-  await client.save();
+let client=await User.findOne({$or:[{userName},{_id},{email}]})
+client.refreshToken=null;
+await client.save()
 
-  let { userAccessToken, userRefreshToken } = req.cookies;
-
-  for (const cookieName in req.cookies) {
+// let {userAccessToken,userRefreshToken}=req.cookies
+for(let cookieName in req.cookies){
     res.clearCookie(cookieName, {
       httpOnly: true,
-      sameSite: "Lax",
-      secure: false, // ✅ secure must be a boolean, not a string
-    });
-  }
+        sameSite: "Lax",  // or Lax/Strict
+        secure: "None",
 
-  //   res.clearCookie("userAccessToken", {
-  //   httpOnly: true,
-  //   sameSite: "Lax",
-  //   secure: false, // match original; NOT "None" — it's a boolean
-  // });
+    })};
+    
+//   res.clearCookie("userAccessToken", {
+//   httpOnly: true,
+//   sameSite: "Lax",
+//   secure: false, // match original; NOT "None" — it's a boolean
+// });
 
-  // res.clearCookie("userRefreshToken", {
-  //   httpOnly: true,
-  //   sameSite: "Lax",
-  //   secure: false,
-  // });
+// res.clearCookie("userRefreshToken", {
+//   httpOnly: true,
+//   sameSite: "Lax",
+//   secure: false,
+// });
+
 
   return res
     .status(codes.accepted)

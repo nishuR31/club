@@ -24,14 +24,14 @@ let changePassword = asyncHandler(async (req, res) => {
       );
   }
 
-  let user = await User.findOne({ $or: [{ userName }, { email }] });
-  if (!user) {
+  let client = await User.findOne({ $or: [{ userName }, { email }] });
+  if (!client) {
     return res
       .status(codes.notFound)
       .json(new ApiErrorResponse("User not found", codes.notFound).res());
   }
 
-  if (!user.otpValid) {
+  if (!client.otpValid) {
     {
       return res
         .status(codes.unauthorized)
@@ -42,7 +42,7 @@ let changePassword = asyncHandler(async (req, res) => {
   }
 
   // Hash the new password
-  const isSame = await bcrypt.compare(password, user.password);
+  const isSame = await bcrypt.compare(password, client.password);
   if (isSame) {
     return res
       .status(codes.conflict)
@@ -54,11 +54,11 @@ let changePassword = asyncHandler(async (req, res) => {
       );
   }
 
-  user.password = password;
-  user.refreshToken = null;
-  user.otpCheck = false;
+  client.password = password;
+  client.refreshToken = null;
+  client.otpCheck = false;
 
-  await user.save(); // Triggers schema validations (optional)
+  await client.save(); // Triggers schema validations (optional)
 
   return res
     .status(codes.ok)

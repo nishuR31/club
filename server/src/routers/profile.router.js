@@ -3,8 +3,11 @@
 
 import express from "express";
 import profile from "../controllers/profile.controller.js";
-import optional from "../middlewares/optional.middleware.js";
+import authOptional from "../middlewares/authOptional.middleware.js";
+import rolesOptional from "../middlewares/rolesOptional.middleware.js";
+
+
 let profileRouter = express.Router();
-profileRouter.get(`/profile/:username`,optional, profile);
+profileRouter.get(`/:user/profile/:username`,authOptional,rolesOptional("admin","client","creator"), profile);
 
 export default profileRouter;

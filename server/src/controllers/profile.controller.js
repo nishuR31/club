@@ -7,8 +7,8 @@ import asyncHandler from "../utils/asyncHandler.js";
 import User from "../models/user.model.js";
 
 const profile = asyncHandler(async (req, res) => {
-  const { username } = req.params;
-  const { userName, email, _id, role } = req.user || {};
+  const { username,user } = req.params;
+  const { userName, email, _id, roles } = req.user || {};
   const client = await User.findOne({ $or:[{userName: username},{email},{_id}] });
 
   if (!client) {
@@ -32,7 +32,7 @@ const profile = asyncHandler(async (req, res) => {
       client: client.userName,
       fullName: client.fullName,
       email: client.email,
-      role: client.role,
+      roles: client.roles,
     };
   } else {
     // Public view - restrict details

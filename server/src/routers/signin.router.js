@@ -2,9 +2,11 @@
 
 import express from "express";
 import signin from "../controllers/signin.controller.js";
-import optional from "../middlewares/optional.middleware.js";
+import rolesOptional from "../middlewares/rolesOptional.middleware.js";
+import authOptional from "../middlewares/authOptional.middleware.js";
 
 let signinRouter = express.Router();
-signinRouter.post(`/:user/signin`, optional, signin);
+signinRouter.post(`/signin/:user`, authOptional,rolesOptional(), signin);
+
 
 export default signinRouter;

@@ -12,8 +12,8 @@ import User from "../models/user.model.js";
 let signin = asyncHandler(async (req, res) => {
   let { user } = req.params;
   let body = req.body;
-  let { userName, email, password, role } = body;
-  if (isEmptyArr([user, role, password]) || !(email || userName)) {
+  let { userName, email, password, roles } = body;
+  if (isEmptyArr([user, roles, password]) || !(email || userName)) {
     return res
       .status(codes.badRequest)
       .json(
@@ -21,13 +21,13 @@ let signin = asyncHandler(async (req, res) => {
       );
   }
 
-  if (!(user === role)) {
+  if (!user.some(role => roles.includes(role))) {
     return res.status(codes.unauthorized).json(
       new ApiErrorResponse(
-        "Mismatched roles accessing detected",
+        "Unauthorized access detected",
         codes.unauthorized,
         {
-          userRole: role,
+          roles: roles,
           tryingFor: user,
         }
       ).res()
@@ -60,13 +60,13 @@ let signin = asyncHandler(async (req, res) => {
     _id: client._id,
     userName: client.userName,
     email: client.email,
-    role: client.role,
+    roles: client.roles,
   };
   let { refreshToken, accessToken } = tokenGeneration(payload);
   client.refreshToken = refreshToken;
   await client.save();
-  res.cookie(`userAccessToken`, accessToken, cookieOptions("access"));
-  res.cookie(`userRefreshToken`, refreshToken, cookieOptions("refresh"));
+  res.cookie(`${user}AccessToken`, accessToken, cookieOptions("access"));
+  res.cookie(`${user}RefreshToken`, refreshToken, cookieOptions("refresh"));
   // res.cookie(`nishan`, "nishan", cookieOptions("refresh"));
 
   return res.status(codes.found).json(

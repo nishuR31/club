@@ -6,28 +6,18 @@ import isEmptyArr from "../utils/isEmptyArr.js";
 import User from "../models/user.model.js";
 
 let edit = asyncHandler(async (req, res) => {
-  let { username } = req.params;
+  let { user} = req.params;
   let { newUserName, newPassword, newEmail, newFullName } = req.body;
 
-  let currentUser = req.user; //auth
-  let user = await User.findById(currentUser._id);
-  if (!user) {
+if(!req.user){return res.status(codes.notFound).json(new ApiErrorResponse("User is not logged in",codes.notFound).res())}
+
+  let client = await User.findById(req.user._id);
+  if (!client) {
     return res
       .status(codes.notFound)
       .json(new ApiErrorResponse("User not found", codes.notFound).res());
   }
 
-  // Prevent editing someone else
-  if (user.userName !== username) {
-    return res
-      .status(codes.forbidden)
-      .json(
-        new ApiErrorResponse(
-          "Cannot edit other user's credentials",
-          codes.forbidden
-        ).res()
-      );
-  }
 
   // Check if no update fields provided
   if (!(newUserName || newPassword || newEmail || newFullName)) {
@@ -45,7 +35,7 @@ let edit = asyncHandler(async (req, res) => {
   let updated = false;
 
   // Email
-  if (newEmail && newEmail !== user.email) {
+  if (newEmail && newEmail !== client.email) {
     let emailExists = await User.findOne({ email: newEmail });
     if (emailExists) {
       return res
@@ -54,12 +44,12 @@ let edit = asyncHandler(async (req, res) => {
           new ApiErrorResponse("Email already in use", codes.conflict).res()
         );
     }
-    user.email = newEmail;
+    client.email = newEmail;
     updated = true;
   }
 
   // Username
-  if (newUserName && newUserName !== user.userName) {
+  if (newUserName && newUserName !== client.userName) {
     let userExists = await User.findOne({ userName: newUserName });
     if (userExists) {
       return res
@@ -73,14 +63,14 @@ let edit = asyncHandler(async (req, res) => {
   }
 
   // Full Name
-  if (newFullName && newFullName !== user.fullName) {
-    user.fullName = newFullName;
+  if (newFullName && newFullName !== client.fullName) {
+    client.fullName = newFullName;
     updated = true;
   }
 
   // Password
   if (newPassword) {
-    let isSame = await bcrypt.compare(newPassword, user.password);
+    let isSame = await bcrypt.compare(newPassword, client.password);
     if (isSame) {
       return res
         .status(codes.conflict)
@@ -91,7 +81,7 @@ let edit = asyncHandler(async (req, res) => {
           ).res()
         );
     }
-    user.password = newPassword; // Will be hashed by pre-save hook
+    client.password = newPassword; // Will be hashed by pre-save hook
     updated = true;
   }
 
@@ -104,9 +94,9 @@ let edit = asyncHandler(async (req, res) => {
   }
 
   // Invalidate tokens
-  user.refreshToken = null;
+  client.refreshToken = null;
 
-  await user.save();
+  await client.save();
 
   return res
     .status(codes.accepted)

@@ -77,6 +77,9 @@ import helpRouter from "../routers/help.router.js";
 import logoutRouter from "../routers/logout.router.js";
 import profileRouter from "../routers/profile.router.js";
 import deletionRouter from "../routers/deletion.router.js";
+import pingRouter from "../routers/ping.router.js";
+import dashboardRouter from "../routers/dashboard.router.js";
+import clubRoute from "../routes/club.route.js";
 
 // let limit = expressLimit({
 //   windowMs: 60 * 1000,
@@ -99,12 +102,16 @@ app.use(baseRoute, forgotRoute);
 app.use(baseRoute, signinRoute);
 app.use(baseRoute, signupRoute);
 app.use(baseRoute, tokenRotateRoute);
+app.use(baseRoute, clubRoute);
 
 app.use(baseRoute, editRouter);
+app.use(baseRoute, dashboardRouter);
 app.use(baseRoute, helpRouter);
 app.use(baseRoute, deletionRouter);
 app.use(baseRoute, logoutRouter);
 app.use(baseRoute, profileRouter);
+app.use(baseRoute, pingRouter);
+app.use(baseRoute, dashboardRouter);
 
 app.get(`/*splat`, (req, res) => {
   res.status(codes.notFound).json(

@@ -5,7 +5,6 @@ const homeSchema = new mongoose.Schema(
     home: {
       type: String,
       default: "home",
-      unique: true,
     },
     about: String,
     moto: String,

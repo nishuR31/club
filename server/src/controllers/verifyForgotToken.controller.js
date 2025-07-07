@@ -18,15 +18,15 @@ const verifyForgotToken = asyncHandler(async (req, res) => {
       );
   }
 
-  const user = await User.findOne({ email });
-  if (!user) {
+  const client = await User.findOne({ email });
+  if (!client) {
     return res
       .status(codes.notFound)
       .json(new ApiErrorResponse("User not found", codes.notFound).res());
   }
 
   // Check if OTP expired
-  if (!user.otpExp || user.otpExp < Date.now()) {
+  if (!client.otpExp || client.otpExp < Date.now()) {
     return res
       .status(codes.unauthorized)
       .json(
@@ -38,7 +38,7 @@ const verifyForgotToken = asyncHandler(async (req, res) => {
   }
 
   // Compare hashed OTP
-  const isMatch = await bcrypt.compare(otp, user.otp);
+  const isMatch = await bcrypt.compare(otp, client.otp);
   if (!isMatch) {
     return res
       .status(codes.unauthorized)
@@ -46,10 +46,10 @@ const verifyForgotToken = asyncHandler(async (req, res) => {
   }
 
   // Clear OTP after success
-  user.otp = null;
-  user.otpExp = null;
-  user.otpValid = true;
-  await user.save();
+  client.otp = null;
+  client.otpExp = null;
+  client.otpValid = true;
+  await client.save();
 
   return res
     .status(codes.ok)
