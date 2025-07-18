@@ -52,6 +52,8 @@ const clubSchema = new mongoose.Schema(
       website: String,
       instagram: String,
       linkedin: String,
+      github: String,
+      facebook: String,
     },
   },
   { timestamps: true }

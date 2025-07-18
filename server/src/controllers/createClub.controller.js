@@ -1,8 +1,8 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import ApiResponse from "../utils/apiResponse.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
-import isEmpty from "../utils/isEmpty.js";
-import codes from "../constants/codes.js";
+import isEmptyArr from "../utils/isEmptyArr.js";
+import codes from "../utils/codes.js";
 import Club from "../models/club.model.js";
 
 const createClub = asyncHandler(async (req, res) => {
@@ -14,38 +14,27 @@ const createClub = asyncHandler(async (req, res) => {
       .status(codes.unauthorized)
       .json(
         new ApiErrorResponse(
-          "Unauthorized: login required",
+          "Unauthorized: login required to create a club",
           codes.unauthorized
         ).res()
       );
   }
 
-  // 2. Role check (adjust roles as needed)
-  if (!["admin","creator"].some(role => ["admin","creator"].includes(req.user.roles))) {
-    return res
-      .status(codes.forbidden)
-      .json(
-        new ApiErrorResponse(
-          "You are not allowed to create a club",
-          codes.forbidden
-        ).res()
-      );
-  }
 
   // 3. Validation
-  if (isEmpty([name, description, category])) {
+  if (isEmptyArr([name, description, category])) {
     return res
       .status(codes.badRequest)
       .json(
         new ApiErrorResponse(
-          "Club credentials are required",
+          "Club's mandatory credentials are required",
           codes.badRequest
         ).res()
       );
   }
 
   // 4. Check if club already exists
-  const existing = await Club.findOne({ name: name});
+  const existing = await Club.findOne({ name});
   if (existing) {
     return res
       .status(codes.conflict)
@@ -77,3 +66,6 @@ const createClub = asyncHandler(async (req, res) => {
 });
 
 export default createClub;
+
+
+//------------------------------------

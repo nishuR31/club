@@ -1,6 +1,6 @@
 // delete: profile/username/delete
 
-import codes from "../constants/codes.js";
+import codes from "../utils/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -8,8 +8,7 @@ import isEmptyArr from "../utils/isEmptyArr.js";
 import User from "../models/user.model.js";
 
 const deletion = asyncHandler(async (req, res) => {
-  const { user } = req.params;
-  const { userName, email, _id, roles } = req.user;
+  const { userName, email, _id, role } = req.user;
 
   // Check for missing fields
   if (!req.user) {
@@ -17,14 +16,14 @@ const deletion = asyncHandler(async (req, res) => {
       .status(codes.badRequest)
       .json(
         new ApiErrorResponse(
-          "User not logged in, so cant delete",
+          "User not logged in, so can't delete",
           codes.badRequest
         ).res()
       );
   }
 
   // Attempt to delete user
-  const client = await User.findOneAndDelete({ userName });
+  const client = await User.findByIdAndDelete( _id );
 
   if (!client) {
     return res
@@ -64,3 +63,6 @@ const deletion = asyncHandler(async (req, res) => {
 });
 
 export default deletion;
+
+
+//-----------------------

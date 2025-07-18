@@ -5,7 +5,7 @@ import required from "../utils/required.js";
 import validator from "validator";
 import bcrypt from "bcrypt";
 
-const roles = ["admin", "client"];
+const roles = ["admin","superAdmin", "client"];
 
 const userSchema = new mongoose.Schema(
   {
@@ -27,36 +27,40 @@ const userSchema = new mongoose.Schema(
       trim: true,
       lowercase: true,
       unique: true,
-      required: [true, required("email")],
-      roles: {
-        type: [String],
+      required: [true, required("email")]
+    },
+
+      role: {
+        type: String,
         enum: {
           values: roles,
-          message: "Invalid role",
+          message: "Invalid role choosen.",
         },
         required:[true,required("roles")],
-        default: ["client"],
+        default: "client",
       },
-    },
     password: {
       type: String,
       trim: true,
       required: [true, required("password")],
     },
     otp: {
-      type: String,
-    },
-    otpExp: { type: Date },
-    otpValid: { type: Boolean },
-    refreshToken: {
-      type: String,
-      default: null,
-    },
-    token: {
-      type: String,
-      default: null,
-    },
+      code:{
+        type: String,
+      },
+      expiry: { type: Date },
+      valid: { type: Boolean }
   },
+    token:{
+      refreshToken: {
+        type: String,
+        default: null,
+      },
+      token: {
+      type: String,
+      default: null,
+    },
+  }},
   { timestamps: true }
 );
 

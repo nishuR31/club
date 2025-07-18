@@ -15,8 +15,9 @@ const homeSchema = new mongoose.Schema(
         ref: "Clubs",
       },
     ],
-    copyRight: String,
-    madeBy: String,
+    copyRight: {type:String,default:`© 2025 SynergyHub. All rights reserved.
+`}
+    madeBy: {type:String,default:`SynergyHub Team`}
   },
   {
     timestamps: true,

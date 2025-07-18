@@ -1,6 +1,6 @@
 // asyncHandler
 
-import codes from "../constants/codes.js";
+import codes from "../utils/codes.js";
 import ApiErrorResponse from "./apiErrorResponse.js";
 
 // export default function asyncHandler(func) {

@@ -1,7 +1,7 @@
-import codes from "../constants/codes";
-import ApiErrorResponse from "../utils/apiErrorResponse";
-import ApiResponse from "../utils/apiResponse";
-import asyncHandler from "../utils/asyncHandler";
+import codes from "../utils/codes.js";
+import ApiErrorResponse from "../utils/apiErrorResponse.js";
+import ApiResponse from "../utils/apiResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
 
 const homePage = asyncHandler(async (req, res) => {
   //home
@@ -19,7 +19,7 @@ const homePage = asyncHandler(async (req, res) => {
     return res
       .status(codes.notFound)
       .json(
-        new ApiErrorResponse("Data not found or missing", codes.notFound).res()
+        new ApiErrorResponse("Data not found or No clubs created", codes.notFound).res()
       );
   }
 
@@ -40,3 +40,5 @@ const homePage = asyncHandler(async (req, res) => {
 });
 
 export default homePage;
+
+//---------------------

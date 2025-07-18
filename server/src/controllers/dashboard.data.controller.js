@@ -1,4 +1,4 @@
-import codes from "../constants/codes.js";
+import codes from "../utils/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 import ApiResponse from "../utils/apiResponse.js";
 import asyncHandler from "../utils/asyncHandler.js";
@@ -6,8 +6,8 @@ import Admin from "../models/admin.model.js";
 import Club from "../models/club.model.js";
 import Client from "../models/client.model.js";
 
-let dashboardData = asyncHandler(async (req, res) => {
-  if (!req.user || !req.user.roles.includes("admin")) {
+let dashboard = asyncHandler(async (req, res) => {
+  if (!req.user) {
     return res
       .status(codes.unauthorized)
       .json(new ApiErrorResponse("Admin login required, access denied!").res());
@@ -30,7 +30,7 @@ let dashboardData = asyncHandler(async (req, res) => {
         userName: "$user.userName",
         fullName: "$user.fullName",
         email: "$user.email",
-        roles: "$user.roles",
+        role: "$user.role",
       },
     },
   ]);
@@ -52,7 +52,7 @@ let dashboardData = asyncHandler(async (req, res) => {
         userName: "$user.userName",
         fullName: "$user.fullName",
         email: "$user.email",
-        roles: "$user.roles",
+        roles: "$user.role",
       },
     },
   ]);
@@ -105,7 +105,7 @@ let dashboardData = asyncHandler(async (req, res) => {
   ]);
 
   return res.status(codes.ok).json(
-    new ApiResponse("Welcome to admin dashboard", codes.ok, {
+    new ApiResponse(`Welcome aboard ${req.user.userName}`, codes.ok, {
       admin: req.user.userName,
       totalClients: clients.length,
       totalClubs: clubs.length,
@@ -117,4 +117,6 @@ let dashboardData = asyncHandler(async (req, res) => {
   );
 });
 
-export default dashboardData;
+export default dashboard;
+
+//-------------------------------------------

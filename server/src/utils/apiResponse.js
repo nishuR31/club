@@ -1,6 +1,6 @@
 // apiResponse
 
-import codes from "../constants/codes.js";
+import codes from "../utils/codes.js";
 
 export default class ApiResponse {
   constructor(

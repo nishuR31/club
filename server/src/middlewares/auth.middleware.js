@@ -1,32 +1,32 @@
 import asyncHandler from "../utils/asyncHandler.js";
 import User from "../models/user.model.js";
 import { verifyAccess, verifyRefresh } from "../utils/tokenization.js"; // use correct methods
-import codes from "../constants/codes.js";
+import codes from "../utils/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
 
-const auth = asyncHandler(async (req, res, next) => {
-  let {user}=req.params;
+const auth = (need=true)=>asyncHandler(async (req, res, next) => {
+  req.user=null;
   let accessToken =
-    req.headers?.authorization?.split(" ")[1] || req.cookies?.[`${user}AccessToken`];
-  let refreshToken = req.cookies?.[`${user}RefreshToken`];
+    req.headers?.authorization?.split(" ")[1] || req.cookies?.userAccessToken;
+  let refreshToken = req.cookies?.userRefreshToken;
 
   if (!accessToken || !refreshToken) {
-    return res
+    return need ?  res
       .status(codes.unauthorized)
       .json(
         new ApiErrorResponse(
           "Missing authentication tokens",
           codes.unauthorized
         ).res()
-      );
+      ): next();
   }
 
   let decodedAccess, decodedRefresh;
 
-  try {
+  if(accessToken){try {
     decodedAccess = verifyAccess(accessToken);
   } catch (err) {
-    return res
+    return need ? res
       .status(codes.unauthorized)
       .json(
         new ApiErrorResponse(
@@ -35,33 +35,33 @@ const auth = asyncHandler(async (req, res, next) => {
           {},
           err
         ).res()
-      );
-  }
+      ):next()
+  }}
 
-  try {
+  if(refreshToken){try {
     decodedRefresh = verifyRefresh(refreshToken);
   } catch (err) {
-    return res
+    return need ? res
       .status(codes.unauthorized)
       .json(
         new ApiErrorResponse(
-          "Refresh token invalid",
+          "Refresh token invalid or expired",
           codes.unauthorized,
           {},
           err
         ).res()
-      );
-  }
+      ):next()
+  }}
 
   if (decodedAccess._id !== decodedRefresh._id) {
-    return res
+    return need ? res
       .status(codes.unauthorized)
       .json(
         new ApiErrorResponse(
           "Token identity mismatch",
           codes.unauthorized
         ).res()
-      );
+      ):next();
   }
 
   const client = await User.findById(decodedRefresh._id);

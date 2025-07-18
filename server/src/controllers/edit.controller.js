@@ -1,108 +1,116 @@
-import codes from "../constants/codes.js";
-import ApiErrorResponse from "../utils/apiErrorResponse.js";
-import ApiResponse from "../utils/apiResponse.js";
-import asyncHandler from "../utils/asyncHandler.js";
-import isEmptyArr from "../utils/isEmptyArr.js";
 import User from "../models/user.model.js";
+import ApiErrorResponse from "../utils/ApiErrorResponse.js";
+import ApiResponse from "../utils/ApiResponse.js";
+import asyncHandler from "../utils/asyncHandler.js";
+import codes from "../utils/codes.js";
 
 let edit = asyncHandler(async (req, res) => {
-  let { user} = req.params;
-  let { newUserName, newPassword, newEmail, newFullName } = req.body;
+  let { newEmail, newUserName, newFullName, newPassword } = req.body;
+  let { email, _id, role, userName } = req.user;
 
-if(!req.user){return res.status(codes.notFound).json(new ApiErrorResponse("User is not logged in",codes.notFound).res())}
+  if (!req.user) {
+    return res
+      .status(codes.unauthorized)
+      .json(
+        new ApiErrorResponse(
+          "User not logged in, cannot edit",
+          codes.unauthorized
+        ).res()
+      );
+  }
 
-  let client = await User.findById(req.user._id);
+  let client = await User.findOne({ $or: [{ _id }, { userName }, { email }] });
   if (!client) {
     return res
       .status(codes.notFound)
-      .json(new ApiErrorResponse("User not found", codes.notFound).res());
+      .json(new ApiErrorResponse("User dont exists.", codes.notFound).res());
   }
 
+  let sameEmail = newEmail === client.email;
+  let samePassword = bcrypt.compare(newPassword, client.password);
+  let sameFullName = newFullName === client.fullName;
+  let sameUserName = newUserName === client.userName;
 
-  // Check if no update fields provided
-  if (!(newUserName || newPassword || newEmail || newFullName)) {
+  if (sameEmail && sameFullName && samePassword && sameUserName) {
     return res
       .status(codes.badRequest)
       .json(
         new ApiErrorResponse(
-          "No data provided for update",
+          "No data has been altered,please provide new data.",
           codes.badRequest
         ).res()
       );
   }
 
-  // ===> DYNAMICALLY UPDATE FIELDS <===
-  let updated = false;
-
-  // Email
-  if (newEmail && newEmail !== client.email) {
-    let emailExists = await User.findOne({ email: newEmail });
-    if (emailExists) {
-      return res
-        .status(codes.conflict)
-        .json(
-          new ApiErrorResponse("Email already in use", codes.conflict).res()
-        );
-    }
-    client.email = newEmail;
-    updated = true;
-  }
-
-  // Username
-  if (newUserName && newUserName !== client.userName) {
-    let userExists = await User.findOne({ userName: newUserName });
-    if (userExists) {
-      return res
-        .status(codes.conflict)
-        .json(
-          new ApiErrorResponse("Username already taken", codes.conflict).res()
-        );
-    }
-    user.userName = newUserName;
-    updated = true;
-  }
-
-  // Full Name
-  if (newFullName && newFullName !== client.fullName) {
-    client.fullName = newFullName;
-    updated = true;
-  }
-
-  // Password
-  if (newPassword) {
-    let isSame = await bcrypt.compare(newPassword, client.password);
-    if (isSame) {
+  if (!sameUserName) {
+    let user = await User.findOne({ userName: newUserName });
+    if (user) {
       return res
         .status(codes.conflict)
         .json(
           new ApiErrorResponse(
-            "New password must be different",
+            "This username is already in use",
             codes.conflict
           ).res()
         );
     }
-    client.password = newPassword; // Will be hashed by pre-save hook
-    updated = true;
+    client.userName = newUserName;
   }
 
-  if (!updated) {
+  if (!sameEmail) {
+    let user = await User.findOne({ email: newEmail });
+    if (user) {
+      return res
+        .status(codes.conflict)
+        .json(
+          new ApiErrorResponse(
+            "This email is already in use",
+            codes.conflict
+          ).res()
+        );
+    }
+    client.email = newEmail;
+  }
+
+  if (!sameFullName) {
+    let user = await User.findOne({ fullName: newFullName });
+    if (user) {
+      return res
+        .status(codes.conflict)
+        .json(new ApiErrorResponse("This fullName is already in use").res());
+    }
+    client.userName = newFullName;
+  }
+
+  if (samePassword) {
     return res
-      .status(codes.badRequest)
+      .status(codes.conflict)
       .json(
-        new ApiErrorResponse("No changes detected", codes.badRequest).res()
+        new ApiErrorResponse(
+          "New password must be different from previous one",
+          codes.conflict
+        ).res()
       );
   }
 
-  // Invalidate tokens
-  client.refreshToken = null;
-
+  client.password = newPassword;
+  client.token.refreshToken = null;
   await client.save();
+
+  // Clear all cookies related to authentication
+  for (let cookieName in req.cookies) {
+    res.clearCookie(cookieName, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    });
+  }
 
   return res
     .status(codes.accepted)
     .json(
       new ApiResponse(
-        "Profile updated successfully. Please log in again.",
+        "Credentials successfully updated, please login.",
         codes.accepted
       ).res()
     );

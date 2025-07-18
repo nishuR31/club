@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import tokenOptions from "../constants/tokenOptions.js";
+import tokenOptions from "../utils/tokenOptions.js";
 function accessToken(payload) {
   return jwt.sign(payload, process.env.SECRET_ACC, tokenOptions("access"));
 }

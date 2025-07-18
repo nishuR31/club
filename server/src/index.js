@@ -5,12 +5,11 @@ import mongoDB from "./config/connectDB.js";
 // dotenv.config();
 import "./utils/config.env.js";
 
-let uri = process.env.MONGO_URI;
 let port = process.env.PORT || 4000;
 
 (async function server() {
   try {
-    await mongoDB(uri);
+    await mongoDB();
     console.log(`Mongo Fired up`);
 
     app.listen(port, () => {

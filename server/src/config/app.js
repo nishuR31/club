@@ -66,20 +66,13 @@ import morgan from "morgan";
 // import expressLimit from "express-rate-limit";
 import cookie from "cookie-parser";
 import logger from "../utils/logger.js";
-import codes from "../constants/codes.js";
+import codes from "../utils/codes.js";
 import ApiErrorResponse from "../utils/apiErrorResponse.js";
-import forgotRoute from "../routes/forgot.route.js";
-import signinRoute from "../routes/signin.route.js";
-import signupRoute from "../routes/signup.route.js";
-import tokenRotateRoute from "../routes/tokenRotate.route.js";
-import editRouter from "../routers/edit.router.js";
-import helpRouter from "../routers/help.router.js";
-import logoutRouter from "../routers/logout.router.js";
-import profileRouter from "../routers/profile.router.js";
-import deletionRouter from "../routers/deletion.router.js";
-import pingRouter from "../routers/ping.router.js";
-import dashboardRouter from "../routers/dashboard.router.js";
-import clubRoute from "../routes/club.route.js";
+import authRouter from "../routes/auth.route.js";
+import adminRouter from "../routes/admin.route.js";
+import clubRouter from "../routes/club.route.js";
+import homeRouter from "../routes/home.route.js";
+
 
 // let limit = expressLimit({
 //   windowMs: 60 * 1000,
@@ -98,22 +91,13 @@ app.use(cookie());
 
 let baseRoute = "/api/v1";
 
-app.use(baseRoute, forgotRoute);
-app.use(baseRoute, signinRoute);
-app.use(baseRoute, signupRoute);
-app.use(baseRoute, tokenRotateRoute);
-app.use(baseRoute, clubRoute);
+app.use(baseRoute, adminRouter);
+app.use(baseRoute, authRouter);
+app.use(baseRoute, clubRouter);
+app.use(baseRoute, homeRouter);
 
-app.use(baseRoute, editRouter);
-app.use(baseRoute, dashboardRouter);
-app.use(baseRoute, helpRouter);
-app.use(baseRoute, deletionRouter);
-app.use(baseRoute, logoutRouter);
-app.use(baseRoute, profileRouter);
-app.use(baseRoute, pingRouter);
-app.use(baseRoute, dashboardRouter);
 
-app.get(`/*splat`, (req, res) => {
+app.get(`/{*splat}`, (req, res) => {
   res.status(codes.notFound).json(
     new ApiErrorResponse(
       "Route after / not found : Error 404",
@@ -126,7 +110,7 @@ app.get(`/*splat`, (req, res) => {
   );
 });
 
-app.get(`${baseRoute}/*splat`, (req, res) => {
+app.get(`${baseRoute}/{*splat}`, (req, res) => {
   res.status(codes.notFound).json(
     new ApiErrorResponse(
       "Route after /api/v1 not found : Error 404",
